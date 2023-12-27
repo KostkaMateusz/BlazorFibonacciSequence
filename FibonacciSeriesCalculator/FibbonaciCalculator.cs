@@ -5,7 +5,7 @@ namespace FibonacciSeriesCalculator;
 
 public static class FibbonaciCalculator
 {
-    public static IEnumerable<(ulong, BigInteger)> FibonacciIterative(ulong len)
+    public static IEnumerable<(uint, BigInteger)> FibonacciIterative(uint len)
     {
         BigInteger a = new(0);
         BigInteger b = new(1);
@@ -14,7 +14,7 @@ public static class FibbonaciCalculator
         yield return (0, a);
         yield return (1, b);
 
-        for (ulong i = 2; i <= len; i++)
+        for (uint i = 2; i <= len; i++)
         {
             c = a + b;
             yield return (i, c);

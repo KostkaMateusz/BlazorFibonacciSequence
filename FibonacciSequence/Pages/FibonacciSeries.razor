@@ -7,12 +7,13 @@
 
 <h3>FibonacciSeries</h3>
 
-<form method="post" @onsubmit="GetFibonaci">
-    <AntiforgeryToken />
-    <InputNumber @bind-Value="FibonaciMaxElement" />
-    <button class="btn btn-primary" type="submit">Submit</button>
-</form>
 
+<EditForm Model="@Model" OnValidSubmit="@GetFibonaci">
+    <DataAnnotationsValidator />    
+    <InputNumber @bind-Value="Model!.FibonaciMaxElement" />
+    <ValidationMessage For="() => Model!.FibonaciMaxElement" />
+    <button class="btn btn-primary" type="submit">Submit</button>
+</EditForm>
 
 @if(fibonaciSeries is null)
 {
@@ -28,7 +29,6 @@ else
             </tr>
         </thead>
     <tbody>
-
     @foreach (var fibonaci in fibonaciSeries)
     {
         <tr>
@@ -40,23 +40,30 @@ else
     </table>
 }
 
-
 @code {
-
     [SupplyParameterFromForm]
-    [Range(0,1000)]
-    public int FibonaciMaxElement { get; set; }
+    public FibonaciFormParameters? Model { get; set; } = new();
+
+    // protected override void OnInitialized() => Model ??= new();
 
     private IList<(ulong, BigInteger)>? fibonaciSeries = null ;
 
     private void GetFibonaci()
-    {        
+    {
+        uint sequenceSize = (uint)Model!.FibonaciMaxElement;
+
         fibonaciSeries = new List<(ulong, BigInteger)>();
-        foreach (var fibonaciSequencePair in FibbonaciCalculator.FibonacciIterative((ulong)this.FibonaciMaxElement))
+        foreach (var fibonaciSequencePair in FibbonaciCalculator.FibonacciIterative(sequenceSize))
         {
             fibonaciSeries.Add(fibonaciSequencePair);
             StateHasChanged();
         }
     }
-    
+
+    public class FibonaciFormParameters
+    {
+        [Required]
+        [Range(0, 5000, ErrorMessage = "Value must be between 0 and 5000.")]
+        public int FibonaciMaxElement { get; set; }
+    }
 }
