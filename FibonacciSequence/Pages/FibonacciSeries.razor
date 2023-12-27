@@ -5,16 +5,24 @@
 
 <PageTitle>Fibonacci Sequence</PageTitle>
 
-<h3 class="text-center"><em>Provide size of Fibonacci Sequence</em></h3>
+<h3><em>Provide size of Fibonacci Sequence</em></h3>
 
-<div class="form-group text-center">
-<EditForm Model="@Model" OnValidSubmit="@GetFibonaci">
+<div class="form-group">
+    <EditForm Model="@Model" OnValidSubmit="@OnClick">
     <DataAnnotationsValidator />
-    <InputNumber class="form-control" @bind-Value="Model!.FibonaciMaxElement" placeholder="Enter a Non-Negative Integer (Max:5000)" />
+    <InputNumber class="form-control" @bind-Value="Model!.FibonaciMaxElement" placeholder="Enter a Non-Negative Integer (Max:10000)" />
     <ValidationMessage For="() => Model!.FibonaciMaxElement" />
     <button class="btn btn-primary btn-lg btn-block" type="submit">Generate Fibonacci Sequence</button>
 </EditForm>
 </div>
+
+<h4>@IsCalculating</h4>
+
+@if (IsCalculating)
+{    
+    <div class="spinner"></div>
+}
+
 
 @if (fibonaciSeries is not null)
 {
@@ -37,25 +45,42 @@
     </table>
 }
 
+
 @code {
     [SupplyParameterFromForm]
     public FibonaciFormParameters? Model { get; set; } = new();
-    
+
+
     private IList<(ulong, BigInteger)>? fibonaciSeries = null ;
+
+
+    public bool IsCalculating { get; set; }= false;
+
+    private async Task OnClick()
+    {       
+        IsCalculating = true;
+
+        await Task.Delay(1);
+
+        GetFibonaci();    
+    }
 
     private void GetFibonaci()
     {
         fibonaciSeries = new List<(ulong, BigInteger)>();
+
         foreach (var fibonaciSequencePair in FibbonaciCalculator.FibonacciIterative((uint)Model!.FibonaciMaxElement))
         {
             fibonaciSeries.Add(fibonaciSequencePair);
-            StateHasChanged();
         }
+        IsCalculating = false;
+
+        return;
     }
 
     public class FibonaciFormParameters
     {        
-        [Range(0, 5000, ErrorMessage = "Value must be between 0 and 5000.")]
+        [Range(0, 10000, ErrorMessage = "Value must be between 0 and 10000.")]
         public int? FibonaciMaxElement { get; set; }
     }
 }

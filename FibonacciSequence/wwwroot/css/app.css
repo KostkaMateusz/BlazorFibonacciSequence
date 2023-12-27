@@ -102,7 +102,6 @@ code {
     color: #c02d76;
 }
 
-
 .spinner {
     border: 16px solid silver;
     border-top: 16px solid #337AB7;
@@ -124,4 +123,3 @@ code {
         transform: rotate(360deg)
     }
 }
-    
