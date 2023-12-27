@@ -1,0 +1,62 @@
+﻿@page "/"
+@using System.Numerics;
+@using FibonacciSeriesCalculator;
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>FibonacciSeries</PageTitle>
+
+<h3>FibonacciSeries</h3>
+
+<form method="post" @onsubmit="GetFibonaci">
+    <AntiforgeryToken />
+    <InputNumber @bind-Value="FibonaciMaxElement" />
+    <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+
+
+@if(fibonaciSeries is null)
+{
+    <p><em>Provide size of Fibonacci Series...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>LP.</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+    <tbody>
+
+    @foreach (var fibonaci in fibonaciSeries)
+    {
+        <tr>
+            <td>@fibonaci.Item1</td>
+            <td>@fibonaci.Item2</td>
+        </tr>
+    }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [SupplyParameterFromForm]
+    [Range(0,1000)]
+    public int FibonaciMaxElement { get; set; }
+
+    private IList<(ulong, BigInteger)>? fibonaciSeries = null ;
+
+    private void GetFibonaci()
+    {        
+        fibonaciSeries = new List<(ulong, BigInteger)>();
+        foreach (var fibonaciSequencePair in FibbonaciCalculator.FibonacciIterative((ulong)this.FibonaciMaxElement))
+        {
+            fibonaciSeries.Add(fibonaciSequencePair);
+            StateHasChanged();
+        }
+    }
+    
+}
