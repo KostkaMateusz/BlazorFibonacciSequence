@@ -59,7 +59,9 @@
 
         await Task.Delay(1);
 
-        GetFibonaci();    
+        GetFibonaci();
+        
+        IsCalculating = false;
     }
 
     private void GetFibonaci()
@@ -70,7 +72,6 @@
         {
             fibonaciSeries.Add(fibonaciSequencePair);
         }
-        IsCalculating = false;
 
         return;
     }
