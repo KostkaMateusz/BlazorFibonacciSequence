@@ -2,6 +2,7 @@
 @using System.Numerics;
 @using FibonacciSeriesCalculator;
 @using System.ComponentModel.DataAnnotations
+@using System.Diagnostics
 
 <PageTitle>Fibonacci Sequence</PageTitle>
 
@@ -15,6 +16,10 @@
     <button class="btn btn-primary btn-lg btn-block" type="submit">Generate Fibonacci Sequence</button>
 </EditForm>
 </div>
+
+
+<h5>Calculation Time: @calculationTime.ElapsedTime seconds</h5>
+
 
 @if (IsCalculating)
 {    
@@ -47,21 +52,27 @@
     [SupplyParameterFromForm]
     public FibonaciFormParameters? Model { get; set; } = new();
 
-
     private IList<(ulong, BigInteger)>? fibonaciSeries = null ;
 
+    public bool IsCalculating { get; set; } = false;
 
-    public bool IsCalculating { get; set; }= false;
+    private CalculationTime calculationTime = new();
+
+    private string? elapsedTime;
 
     private async Task OnClick()
-    {       
+    {   
+        calculationTime.StartTimer();
+
         IsCalculating = true;
 
-        await Task.Delay(1);
+        await Task.Delay(2);
 
         GetFibonaci();
-        
+
         IsCalculating = false;
+
+        calculationTime.StopTimer();        
     }
 
     private void GetFibonaci()
@@ -76,9 +87,34 @@
         return;
     }
 
-    public class FibonaciFormParameters
+    public sealed class FibonaciFormParameters
     {        
         [Range(0, 15000, ErrorMessage = "Value must be between 0 and 15000.")]
         public int? FibonaciMaxElement { get; set; }
+    }
+
+    public sealed class CalculationTime
+    {
+        private Stopwatch stopWatch = new();
+
+        public string ElapsedTime
+        {
+            get
+            {
+                // Get the elapsed time as a TimeSpan value.
+                TimeSpan ts = this.stopWatch.Elapsed;
+
+                // Format and display the TimeSpan value.                
+                return String.Format("{0:00}.{1:00}", ts.Seconds, ts.Milliseconds / 10); ;
+            }
+        } 
+
+        public void StartTimer() 
+        {            
+            ResetTimer();
+            this.stopWatch.Start();        
+        }
+        public void StopTimer() => this.stopWatch.Stop();        
+        private void ResetTimer() => this.stopWatch.Reset();
     }
 }
